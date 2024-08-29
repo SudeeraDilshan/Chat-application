@@ -18,7 +18,9 @@ const App = () => {
     onAuthStateChanged(auth,async(user)=>{
       if(user){
           navigate('/chat');
+          console.log('User signed in');
           await loadUserData(user.uid);
+
       }
       else{
          console.log('No user signed in');

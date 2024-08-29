@@ -1,5 +1,7 @@
 import { doc,getDoc } from "firebase/firestore";
 import { createContext,useState } from "react";
+import { db } from "../config/firebase";
+
 
  export const AppContext = createContext();
 
@@ -12,7 +14,8 @@ import { createContext,useState } from "react";
         try {
             const userRef = doc(db,'users',uid);
             const userSnap = await getDoc(userRef);
-            console.log(userSnap);
+            const userData = userSnap.data();
+            console.log(userData);
 
         } catch (error) {
             
