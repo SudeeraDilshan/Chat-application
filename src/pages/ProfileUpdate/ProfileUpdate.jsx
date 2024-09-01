@@ -31,7 +31,7 @@ const ProfileUpdate = () => {
         await updateDoc(docRef,{avatar:imgUrl,bio:bio,name:name});
       }
       else{
-        await updateDoc(docRef,{avatar:imgUrl,bio:bio,name:name});
+        await updateDoc(docRef,{bio:bio,name:name});
       }
       const snap = await getDoc(docRef);
       setUserData(snap.data());
@@ -59,7 +59,7 @@ const ProfileUpdate = () => {
       }
     }
     else{
-     navigate('/login');
+     navigate('/');
     }
     }
   )

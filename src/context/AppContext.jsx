@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { db } from "../config/firebase";
 
 
+
  export const AppContext = createContext();
 
  const AppContextProvider = (props)=>{
@@ -41,7 +42,7 @@ import { db } from "../config/firebase";
                 const chatItems = res.data().chatsData;
                 const tempData = [];
                 for(const item of chatItems){
-                    const userRef = doc(db,'users',chat.rId);
+                    const userRef = doc(db,'users',item.rId);
                     const userSnap = await getDoc(userRef);
                     const userData = userSnap.data();
                     tempData.push({...item,userData});
