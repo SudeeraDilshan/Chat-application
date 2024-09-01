@@ -108,30 +108,31 @@ const LeftSidebar = () => {
               <img src={user.avatar} alt="" />
               <p>{user.name}</p>
             </div>
-            :Array(12).fill("").map((item, index) => (
-              <div key={index} className="friends">
-                {/* <img src={item.userData.avatar} alt="" /> */}
-                <img src={assets.profile_img} alt="" />
-                <div>
-                  <p>Pissaa</p>
-                  <span>hello kollo</span>
-                </div>
-              </div>
-            ))
-            // :
-            //   chatData && chatData.length > 0 ? (
-            //     chatData.map((item, index) => (
-            //       <div key={index} className="friends">
-            //         <img src={item.userData.avatar} alt="" />
-            //         <div>
-            //           <p>{item.userData.name}</p>
-            //           <span>{item.lastMessage}</span>
-            //         </div>
-            //       </div>
-            //     ))
-            //   ) : (
-            //     <p>No chats available</p>
-            //   )
+            // :Array(12).fill("").map((item, index) => (
+            //   <div key={index} className="friends">
+            //     {/* <img src={item.userData.avatar} alt="" /> */}
+            //     <img src={assets.profile_img} alt="" />
+            //     <div>
+            //       <p>Pissaa</p>
+            //       <span>hello kollo</span>
+            //     </div>
+            //   </div>
+            // ))
+            :
+              chatData && chatData.length > 0 ? (
+                chatData.map((item, index) => (
+                  <div key={index} className="friends">
+                    <img src={item.userData.avatar} alt="" />
+                    <div>
+                      <p>{item.userData.name}</p>
+                      <span>{item.lastMessage}</span>
+                    </div>
+                  </div>
+                )) 
+              )
+              : (
+                <p>No chats available</p>
+              )
 
           }
         </div>
