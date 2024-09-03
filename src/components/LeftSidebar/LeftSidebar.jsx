@@ -3,7 +3,7 @@ import './LeftSidebar.css'
 import assets from '../../assets/assets'
 import { useNavigate } from 'react-router-dom'
 import { AppContext } from '../../context/AppContext'
-import { arrayUnion, collection, setDoc, doc, getDocs, query, where, serverTimestamp, updateDoc } from '@firebase/firestore'
+import { arrayUnion, collection, setDoc, doc, getDoc, query, where, serverTimestamp, updateDoc } from '@firebase/firestore'
 import { db } from '../../config/firebase'
 import { toast } from 'react-toastify'
 
@@ -13,7 +13,7 @@ import { toast } from 'react-toastify'
 
 const LeftSidebar = () => {
   const navigate = useNavigate();
-  const { userData,chatData,chatUser,setChatUser,setMessagesId,messagesId} = useContext(AppContext);
+  const { userData, chatData, chatUser, setChatUser, setMessagesId, messagesId } = useContext(AppContext);
   const [user, setUser] = useState(null);
   const [showsearch, setShowSearch] = useState(false);
 
@@ -33,7 +33,7 @@ const LeftSidebar = () => {
             }
           });
           if (!userExist) {
-          setUser(querySnap.docs[0].data());
+            setUser(querySnap.docs[0].data());
           }
         }
         else {
@@ -82,10 +82,25 @@ const LeftSidebar = () => {
     }
   }
 
-  const setChat = async(item)=>{
-   console.log(item);
-   setMessagesId(item.messegeId);
-   setChatUser(item);
+  const setChat = async (item) => {
+    console.log(item);
+   try {
+    
+    setMessagesId(item.messegeId);
+    setChatUser(item);
+    const userChatsref = doc(db, 'chats', userData.id);
+    const userChatsSnapshot = await getDoc(userChatsref);
+    const userChatsData = userChatsSnapshot.data();
+    const chatIndex = userChatsData.chatsData.findIndex((c) => c.messegeId === item.messegeId);
+    userChatsData.chatsData[chatIndex].messageSeen = true;
+    await updateDoc(userChatsref, {
+      chatsData: userChatsData.chatsData
+    });
+
+   } catch (error) {
+    toast.error(error.message);
+    console.error(error);
+   }
   }
 
   return (
@@ -125,17 +140,17 @@ const LeftSidebar = () => {
             //   </div>
             // ))
             :
-              chatData && chatData.length > 0 ? (
-                chatData.map((item, index) => (
-                  <div onClick={()=>{setChat(item)}} key={index} className="friends">
-                    <img src={item.userData.avatar} alt="" />
-                    <div>
-                      <p>{item.userData.name}</p>
-                      <span>{item.lastMessage}</span>
-                    </div>
+            chatData && chatData.length > 0 ? (
+              chatData.map((item, index) => (
+                <div onClick={() => { setChat(item) }} key={index} className={`friends ${item.messageSeen || item.messegeId === messagesId ? "" : "border"}`}>
+                  <img src={item.userData.avatar} alt="" />
+                  <div>
+                    <p>{item.userData.name}</p>
+                    <span>{item.lastMessage}</span>
                   </div>
-                )) 
-              )
+                </div>
+              ))
+            )
               : (
                 <p>No chats available</p>
               )
