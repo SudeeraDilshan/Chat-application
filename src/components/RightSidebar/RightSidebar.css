@@ -74,3 +74,21 @@
     border-radius: 20px;
     cursor: pointer;
 }
+
+@media(max-width: 900px){
+    .rs{
+        display: none;
+    }
+    /* .rs-profile h3{
+        font-size: 16px;
+    }
+    .rs-profile p{
+        font-size: 9px;
+    }
+    .rs-media div img{
+        width: 50px;
+    }
+    .rs button{
+        padding: 10px 50px;
+    } */
+}
