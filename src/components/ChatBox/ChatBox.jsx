@@ -6,6 +6,7 @@ import { onSnapshot, doc, updateDoc } from 'firebase/firestore'
 import { db } from '../../config/firebase'
 import { arrayUnion, getDoc } from '@firebase/firestore'
 import { toast } from 'react-toastify'
+import { uploadBytes, ref } from 'firebase/storage'
 
 
 const ChatBox = () => {
@@ -51,15 +52,58 @@ const ChatBox = () => {
     setInput("");
   }
 
-  const ConvertTimeStamp = (timestamp)=>{
+  const sendImage = async (e) => {
+    try {
+      const fileURl = await uploadBytes(e.target.files[0]);
+      if (fileURl && messagesId) {
+        await updateDoc(doc(db, 'messeges', messagesId), {
+          messages: arrayUnion({
+            sId: userData.id,
+            image: fileURl,
+            createAt: new Date()
+          })
+        })
+
+        const userIDs = [chatUser.rId, userData.id];
+
+        userIDs.forEach(async (id) => {
+          const userChatRef = doc(db, 'chats', id);
+          const userChatsSnapshot = await getDoc(userChatRef);
+
+          if (userChatsSnapshot.exists()) {
+            const userChatData = userChatsSnapshot.data();
+            const chatIndex = userChatData.chatsData.findIndex((c) => c.messegeId === messagesId);
+            userChatData.chatsData[chatIndex].lastMessage = "Image";
+            userChatData.chatsData[chatIndex].updateAt = Date.now();
+            if (userChatData.chatsData[chatIndex].rId === userData.id) {
+              userChatData.chatsData[chatIndex].messageSeen = false;
+
+            }
+            await updateDoc(userChatRef, {
+              chatsData: userChatData.chatsData
+            })
+
+          }
+
+        })
+
+      }
+    } catch (error) {
+      toast.error(error.message);
+      console.error(error);
+    }
+  }
+
+
+  const ConvertTimeStamp = (timestamp) => {
     let date = timestamp.toDate();
     const hour = date.getHours();
     const minute = date.getMinutes();
-    if(hour>12){
-      return hour-12+":"+minute+"PM";
+    if (hour > 12) {
+      return hour - 12 + ":" + minute + "PM";
     }
-    else{
-      return hour+":"+minute+"AM";
+    else {
+      return hour + ":" + minute + "AM";
     }
   }
 
@@ -83,18 +127,18 @@ const ChatBox = () => {
       </div>
 
       <div className="chat-msg">
-        {messages.map((msg,index)=>(
-            <div key={index} className={msg.sId === userData.id ?"s-msg":"r-msg"}>
+        {messages.map((msg, index) => (
+          <div key={index} className={msg.sId === userData.id ? "s-msg" : "r-msg"}>
             <p className="msg">{msg.text}</p>
             <div>
-              <img src={msg.sId === userData.id ? userData.avatar:chatUser.userData.avatar} alt="" />
+              <img src={msg.sId === userData.id ? userData.avatar : chatUser.userData.avatar} alt="" />
               <p>{ConvertTimeStamp(msg.createAt)}</p>
             </div>
           </div>
         ))}
-      
 
-      
+
+
 
       </div>
 
@@ -102,7 +146,7 @@ const ChatBox = () => {
 
       <div className="chat-input">
         <input onChange={(e) => { setInput(e.target.value) }} value={input} type="text" placeholder='send a messege' />
-        <input type="file" id="image" accept='image/png, image/jpeg' hidden />
+        <input onChange={sendImage} type="file" id="image" accept='image/png, image/jpeg' hidden />
         <label htmlFor="image">
           <img src={assets.gallery_icon} alt="" />
         </label>
