@@ -90,7 +90,7 @@ const ChatBox = () => {
       }
     } catch (error) {
       toast.error(error.message);
-      console.error(error);
+      console.log(error);
     }
   }
 
@@ -129,7 +129,7 @@ const ChatBox = () => {
       <div className="chat-msg">
         {messages.map((msg, index) => (
           <div key={index} className={msg.sId === userData.id ? "s-msg" : "r-msg"}>
-            <p className="msg">{msg.text}</p>
+            {msg['image'] ? <img className='msg-img' src={msg.image} alt="" /> : <p className="msg">{msg.text}</p>}
             <div>
               <img src={msg.sId === userData.id ? userData.avatar : chatUser.userData.avatar} alt="" />
               <p>{ConvertTimeStamp(msg.createAt)}</p>
