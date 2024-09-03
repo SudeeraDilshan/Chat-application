@@ -13,7 +13,9 @@ img.dot{
     width:15px !important;
 }
 
-.hidden{
-    display: none;
+@media(max-width:900px){
+    .hidden{
+        display: none;
+    }
 }
 
